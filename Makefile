@@ -1,16 +1,12 @@
-CC=c9
-CFLAGS=-g3 -pedantic -Wall
+CC=gcc
+CFLAGS=-Wall
 
-all: test_skiplist
+all: skiplist
 
-test_skiplist: test_skiplist.o skiplist.o
+skiplist: skiplist.o
 	$(CC) $(CFLAGS) -o $@ $^
 
-test_skiplist.o skiplist.o: skiplist.h
-
-test: all
-	./test_skiplist 100000
-	valgrind -q --leak-check=full ./test_skiplist 1000
+skiplist.o skiplist.o: skiplist.h
 
 clean:
-	$(RM) test_skiplist *.o
+	$(RM) skiplist *.o
