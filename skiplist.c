@@ -6,5 +6,8 @@
 
 #define MAX_HEIGHT (32)
 
-int main(){
-}
+struct skiplist {
+	int key;
+	int height;               
+	struct skiplist *next[1];  
+};
