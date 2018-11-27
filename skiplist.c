@@ -5,3 +5,6 @@
 #include "skiplist.h"
 
 #define MAX_HEIGHT (32)
+
+int main(){
+}
