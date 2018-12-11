@@ -1,18 +1,9 @@
 module Skiplist
 
   use import int.Int
-  use import array.Array
   use import list.List
 
-  type skiplist = Empty | Succ int (skiplist) (list skiplist)
-
-  (*type skiplist 'a = {
-    value: 'a;
-    ne : list 'a;       (* next element *)    (* Element suivant dans la même couche *)
-    nl : list 'a;      (* next layer *)    (* Couche inferieure *)
-  }*)
-
-  (*let root (v: 'a) : skiplist 'a = Succ (v; Empty; Empty)*)
+  type skiplist = Empty | Succ int (skiplist) (list skiplist)  
 
   let rec mem_skiplist (v: int) (sl: skiplist) : bool =
     match sl with
