@@ -2,21 +2,51 @@ module Skiplist
 
   use import int.Int
   use import list.List
+  use import array.Array
+  use import option.Option
 
-  type skiplist = Empty | Succ int (skiplist) (list skiplist)  
+  type skiplist = Empty | Succ int (skiplist) (list skiplist) 
 
-  let rec mem_skiplist (v: int) (sl: skiplist) : bool =
-    match sl with
-    | Empty -> False
-    | Succ v_sl he hl -> if v = v_sl then True
+
+  predicate is_in_sl (v:int) (sl:skiplist) = match sl with
+    Empty -> false
+    | Succ v_sl he hl -> if v = v_sl then true
                                      else match he with
-                                          | Empty -> False
+                                          | Empty -> false
+                                          | Succ v2_sl _ _ -> if v2_sl <= v then is_in_sl v he
+                                                                                else match hl with
+                                                                                     | Nil -> false
+                                                                                     | Cons nl _ -> is_in_sl v nl
+                                                                                     end
+                                          end
+    end
+  
+
+  let rec mem_skiplist (v: int) (sl: skiplist) : option skiplist
+  ensures {  (match result with 
+            | None -> not (is_in_sl v sl)
+            | Some x -> (is_in_sl v sl) 
+            end)
+            /\ 
+            (match result with 
+            | None -> not (is_in_sl v sl)
+            | Some (Succ vald _ _) -> (v = vald)
+            | Some (Empty) -> false
+            end)
+          }
+  =
+    match sl with
+    | Empty -> None
+    | Succ v_sl he hl -> if v = v_sl then (Some sl)
+                                     else match he with
+                                          | Empty -> None
                                           | Succ v2_sl _ _ -> if v2_sl <= v then mem_skiplist v he
                                                                                 else match hl with
-                                                                                     | Nil -> False
+                                                                                     | Nil -> None
                                                                                      | Cons nl _ -> mem_skiplist v nl
                                                                                      end
                                           end
     end
-
+    
 end
+
