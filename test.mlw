@@ -2,7 +2,9 @@ module Skiplist
 
   use import int.Int
   use import array.Array
-  type skiplist 'a = Empty | Succ 'a (skiplist 'a) (skiplist 'a)
+  use import list.List
+
+  type skiplist = Empty | Succ int (skiplist) (list skiplist)
 
   (*type skiplist 'a = {
     value: 'a;
@@ -12,14 +14,17 @@ module Skiplist
 
   (*let root (v: 'a) : skiplist 'a = Succ (v; Empty; Empty)*)
 
-  let rec mem_skiplist (v: 'a) (sl: skiplist 'a) : bool =
+  let rec mem_skiplist (v: int) (sl: skiplist) : bool =
     match sl with
     | Empty -> False
     | Succ v_sl he hl -> if v = v_sl then True
                                      else match he with
                                           | Empty -> False
-                                          | Succ v2_sl he2 hl2 -> if v2_sl <= v then mem_skiplist v he
-                                                                                else mem_skiplist v hl
+                                          | Succ v2_sl _ _ -> if v2_sl <= v then mem_skiplist v he
+                                                                                else match hl with
+                                                                                     | Nil -> False
+                                                                                     | Cons nl _ -> mem_skiplist v nl
+                                                                                     end
                                           end
     end
 
