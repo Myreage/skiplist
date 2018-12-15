@@ -1,0 +1,37 @@
+module SkipList
+
+use import int.Int
+use import list.List
+
+(* pour chaque node on stocke la valeur, et un tableau de tous les successeurs *)
+type node = Empty | Node int (list node) 
+type skiplist = node 
+
+
+let rec find (v:int) (sl:skiplist) : skiplist = 
+match sl with
+| Empty -> Empty
+| Node v2 l -> if v2 = v then (Node v2 l)
+                    else 
+                            match l with        
+                            | Nil ->  Empty
+                            | Cons (Node v3 sl2) q -> if v = v3 then (Node v3 sl2) (* si v = elt droite, fini *)
+                            else if v < v3 then find v (Node v2 q)    (* si v < elt droite, on descend *)                        
+                            else find v (Node v3 sl2) (* si v > elt droite, on continue à droite *)
+
+            end
+                        
+
+
+match sl with
+    | Empty -> None
+    | Succ v_sl he hl _ -> if v = v_sl then (Some sl)
+                                     else match he with
+                                          | Empty -> None
+                                          | Succ v2_sl _ _ _ -> if v2_sl <= v then mem_skiplist v he
+                                                                                else match hl with
+                                                                                     | Nil -> None
+                                                                                     | Cons nl _ -> mem_skiplist v nl
+                                                                                     end
+                                          end
+    end
