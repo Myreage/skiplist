@@ -5,12 +5,11 @@ module Skiplist
   use import array.Array
   use import option.Option
 
-  type skiplist = Empty | Succ int (skiplist) (list skiplist) 
-
+  type skiplist = Empty | Succ int (skiplist) (list skiplist) int
 
   predicate is_in_sl (v:int) (sl:skiplist) = match sl with
     Empty -> false
-    | Succ v_sl he hl -> if v = v_sl then true
+    | Succ v_sl he hl _ -> if v = v_sl then true
                                      else match he with
                                           | Empty -> false
                                           | Succ v2_sl _ _ -> if v2_sl <= v then is_in_sl v he
@@ -20,15 +19,15 @@ module Skiplist
                                                                                      end
                                           end
     end
-  
+
 
   let rec mem_skiplist (v: int) (sl: skiplist) : option skiplist
-  ensures {  (match result with 
+  ensures {  (match result with
             | None -> not (is_in_sl v sl)
-            | Some x -> (is_in_sl v sl) 
+            | Some x -> (is_in_sl v sl)
             end)
-            /\ 
-            (match result with 
+            /\
+            (match result with
             | None -> not (is_in_sl v sl)
             | Some (Succ vald _ _) -> (v = vald)
             | Some (Empty) -> false
@@ -37,16 +36,37 @@ module Skiplist
   =
     match sl with
     | Empty -> None
-    | Succ v_sl he hl -> if v = v_sl then (Some sl)
+    | Succ v_sl he hl _ -> if v = v_sl then (Some sl)
                                      else match he with
                                           | Empty -> None
-                                          | Succ v2_sl _ _ -> if v2_sl <= v then mem_skiplist v he
+                                          | Succ v2_sl _ _ _ -> if v2_sl <= v then mem_skiplist v he
                                                                                 else match hl with
                                                                                      | Nil -> None
                                                                                      | Cons nl _ -> mem_skiplist v nl
                                                                                      end
                                           end
     end
-    
-end
+
+    (* Renvoie le nombre de réussite d'affilé pour un flip coin de probabilité p/100 *)
+
+    let nombre_etage (p:int) : int =
+       let random = new random; (*new random = fonction renvoyant un random entre 0 et 100 *)
+       let etage = 0 in
+       while p < random do
+        etage++;
+        random = new random;
+       done;
+       etage
+    end
+
+    (* On prend la valeur v à ajouter, la skiplist sl à laquelle il faut ajouter v et nsl la nouvelle liste sl à laquelle on aura ajouté v  *)
+
+    let rec add_skiplist (v:int) (sl:skiplist) (nsl:skiplist) : option skiplist
+    = match sl with
+    | Empty -> Succ v Empty Nil (* Faut encore gérer les ajouts dans les couches supérieures *)
+    | Succ vs he hl p -> match hl with
+                      | Cons (Succ nv _ _) Nil -> if nv > v then (* Couche basse de la skiplist *)
+                      | Cons s c -> add_skiplist v s
+
+    end
 
